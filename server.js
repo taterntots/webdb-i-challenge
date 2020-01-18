@@ -51,6 +51,30 @@ server.post('/api/accounts/', (req, res) => {
     })
 })
 
+server.delete('/api/accounts/:id', (req, res) => {
+  db('accounts')
+    .where({ id: req.params.id })
+    .del()
+    .then(deleted => {
+      res.status(200).json({ success: `${deleted} account(s) deleted`});
+    })
+    .catch(error => {
+      res.status(500).json({ errorMessage: 'Failed to delete specified account' })
+    })
+})
+
+server.put('/api/accounts/:id', (req, res) => {
+  db('accounts')
+    .where({ id: req.params.id })
+    .update(req.body)
+    .then(newAccount => {
+      res.status(200).json({ success: `${newAccount} account(s) updated`});
+    })
+    .catch(error => {
+      res.status(500).json({ errorMessage: 'Failed to update specified account' })
+    })
+})
+
 // server.get('/api/accounts', async (req, res, next) => {
 //   try {
 //     //translates to 'SELECT * FROM accounts'
@@ -72,7 +96,5 @@ server.post('/api/accounts/', (req, res) => {
 //       next(error)
 //   }
 // })
-
-
 
 module.exports = server;
