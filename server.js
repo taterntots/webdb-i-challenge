@@ -32,8 +32,23 @@ server.get('/api/accounts/:id', (req, res) => {
 
 // shorthand for --- db.select('*').from('accounts')
 
-server.post('/api/accounts/:id', (req, res) => {
-  db('accounts') // shorthand for --- db.select('*').from('accounts')
+server.post('/api/accounts/', (req, res) => {
+  db('accounts') // shorthand for --- db.insert(req.body).into('accounts')
+    .insert(req.body, 'id') //second argument 'id' will show a warning on console when using SQLite
+    .then(ids => {
+      //returns an array of one element, the id of the last record inserted
+      const id = ids[0];
+
+      return db('accounts')
+        .where({ id })
+        .first()
+        .then(newAccount => {
+          res.status(201).json(newAccount); //returns the first item in the array, aka, the one we just created
+        })
+    })
+    .catch(error => {
+      res.status(500).json({ errorMessage: 'Failed to create new account' })
+    })
 })
 
 // server.get('/api/accounts', async (req, res, next) => {
